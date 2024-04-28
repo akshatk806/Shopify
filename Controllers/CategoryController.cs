@@ -1,4 +1,5 @@
 ﻿﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Product_Management.Data;
 using Product_Management.Models.DomainModels;
@@ -6,6 +7,7 @@ using Product_Management.Models.DTO;
 
 namespace Product_Management.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext context;
@@ -37,7 +39,8 @@ namespace Product_Management.Controllers
 
             await context.Categories.AddAsync(newCategory);
             await context.SaveChangesAsync();
-
+            TempData["success"] = "Category Added Successfully";
+            
             return RedirectToAction("Index", "Category");
         }
     }
