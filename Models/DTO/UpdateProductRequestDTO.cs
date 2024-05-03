@@ -1,11 +1,16 @@
 using Product_Management.Models.DomainModels;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Product_Management.Models.DTO
 {
-    public class AddProductRequestDTO
+    public class UpdateProductRequestDTO
     {
+        [Key]
+        public Guid ProductId { get; set; }
+
+
         [Required]
         public string ProductName { get; set; }
 
@@ -17,11 +22,9 @@ namespace Product_Management.Models.DTO
         public int ProductPrice { get; set; }
 
         public DateTime ProductCreatedAt { get; set; } = DateTime.Now;
+        [ValidateNever]
+        public Category Category { get; set; }
 
         public int CategoryId { get; set; }
-
-        // navigation property
-        [ForeignKey("CategoryId")]
-        public Category Category { get; set; }
     }
 }
