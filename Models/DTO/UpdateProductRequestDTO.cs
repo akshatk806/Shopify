@@ -2,6 +2,7 @@ using Product_Management.Models.DomainModels;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel;
 
 namespace Product_Management.Models.DTO
 {
@@ -22,6 +23,12 @@ namespace Product_Management.Models.DTO
         public int ProductPrice { get; set; }
 
         public DateTime ProductCreatedAt { get; set; } = DateTime.Now;
+
+        [DefaultValue(true)]
+        public bool IsActive { get; set; } = true;
+
+        public bool IsTrending { get; set; } = false;
+        
         [ValidateNever]
         public Category Category { get; set; }
 

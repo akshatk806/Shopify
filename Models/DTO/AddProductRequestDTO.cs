@@ -1,4 +1,5 @@
 using Product_Management.Models.DomainModels;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,6 +19,13 @@ namespace Product_Management.Models.DTO
 
         public DateTime ProductCreatedAt { get; set; } = DateTime.Now;
 
+        [DefaultValue(true)]
+        public bool IsActive { get; set; } = true;
+
+        public bool IsTrending { get; set; } = false;
+
+        public string ProductImageURL { get; set; }
+        public IFormFile ImagePath { get; set; }
         public int CategoryId { get; set; }
 
         // navigation property
