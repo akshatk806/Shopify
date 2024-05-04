@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Product_Management.Data;
+using Product_Management.Migrations.ApplicationDb;
 using Product_Management.Models.DomainModels;
-using Product_Management.Services;
+using Product_Management.Models.DTO;
 
 namespace CustomIdentity.Controllers
 {
@@ -13,29 +14,23 @@ namespace CustomIdentity.Controllers
         private readonly SignInManager<UserModel> signInManager;
         private readonly UserManager<UserModel> userManager;
         private readonly AuthDbContext context;
-        private readonly ApplicationDbContext dbContext;
-        private readonly EmailSender emailContext;
 
-        public AdminController(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, AuthDbContext context, ApplicationDbContext dbContext, EmailSender emailSender)
+        public AdminController(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, AuthDbContext context)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.context = context;
-            this.dbContext = dbContext;
-            this.emailContext = emailSender;
         }
         public IActionResult Index()
         {
-            ViewBag.totalUsers = context.Users.Where(x => !x.Email.Contains("Admin") && x.Phone != "NA").Count();
-            ViewBag.totalProducts = dbContext.Products.Count();
             return View();
         }
 
         [HttpGet]
         public IActionResult GetAllUsers()
         {
-            var allUsers = userManager.Users.Where(x => !x.Email.Contains("admin") && x.Phone != "NA").OrderByDescending(x => x.UserAddedAt).ToList();
-            
+           var allUsers = userManager.Users.Where(x => !x.Email.Contains("admin")).OrderByDescending(x => x.UserAddedAt).ToList();
+
             return View(allUsers);
         }
 
@@ -43,15 +38,12 @@ namespace CustomIdentity.Controllers
         public IActionResult UpdateUser(string id)
         {
             var user = userManager.Users.FirstOrDefault(x => x.Id == id);
-            if(user == null)
-            {
-                return NotFound();
-            }
+
             return View(user);
         }
 
         [HttpPost("/id")] 
-        public async Task<IActionResult> UpdateUser(UserModel request)
+        public IActionResult UpdateUser(UserModel request)
         {
             if (!ModelState.IsValid)
             {
@@ -63,28 +55,13 @@ namespace CustomIdentity.Controllers
                 return NotFound();
             }
 
-            var oldPassword = existingUser.Password;
-            var newPassword = request.Password;
-
             existingUser.Email = request.Email;
             existingUser.Password = request.Password;
             existingUser.Name = request.Name;
             existingUser.Address = request.Address; 
             existingUser.Phone = request.Phone;
 
-            var resultPassword = await userManager.ChangePasswordAsync(existingUser, oldPassword, newPassword);
-            if (resultPassword.Succeeded)
-            {
-                existingUser.Password = newPassword;
-
-                await userManager.UpdateAsync(existingUser);
-            }
-
             context.SaveChanges();
-            if (oldPassword != newPassword)
-            {
-                await emailContext.SendEmail(request.Email, "Your Password is changed by the Shopify Admin", "\nNew Password: " + existingUser.Password);
-            }
             TempData["usersuccess"] = "User Updated Successfully";
             return RedirectToAction("GetAllUsers", "Admin");
         }

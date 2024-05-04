@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Product_Management.Data;
 using Product_Management.Models;
+using Product_Management.Models.DomainModels;
 using System.Diagnostics;
 
 namespace Product_Management.Controllers
@@ -18,16 +19,16 @@ namespace Product_Management.Controllers
 
         public IActionResult Index()
         {
-            var categoryList = _context.Categories.ToList();
-
-            //pass category list to view
-            ViewBag.CategoryList = categoryList;
             return View();
         }
 
-        public IActionResult Privacy()
+        [HttpPost]
+        public IActionResult Privacy(string myData)
         {
-            return View();
+            //var mycName = JsonConvert.SerializeObject<Product>(cName);
+            int CategoryId = _context.Categories.FirstOrDefault(x=>x.CategoryName == myData).CategoryId;
+            TempData["CategoryId"] = CategoryId;
+            return Json(new { result = "success" });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

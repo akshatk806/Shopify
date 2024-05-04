@@ -1,5 +1,4 @@
-﻿using Product_Management.Validation;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Product_Management.Models.DTO
 {
