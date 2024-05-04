@@ -31,6 +31,7 @@ namespace Product_Management.Models.DTO
 
         [ValidateNever]
         public string ProductImageURL { get; set; }
+        [ValidateNever]
         public IFormFile ImagePath { get; set; }
         
         [ValidateNever]
