@@ -56,6 +56,7 @@ namespace Product_Management.Controllers
             //return PartialView("_ProductList", finalProduct);
         }
 
+
         // Add
         [HttpGet("/AddProduct")]
         public async Task<IActionResult> Add()
@@ -135,6 +136,7 @@ namespace Product_Management.Controllers
                 Category = product.Category,
                 IsTrending= product.IsTrending,
                 IsActive = product.IsActive,
+                ProductImageURL = product.ProductImageURL
             };
             ViewBag.CategoryList = await context.Categories.Where(x => x.CategoryId != 6).ToListAsync();
 
@@ -162,12 +164,41 @@ namespace Product_Management.Controllers
             existingProduct.IsTrending = request.IsTrending;
             existingProduct.IsActive = request.IsActive;
 
+            if (request.ImagePath == null)
+            {
+                await context.SaveChangesAsync();
+                TempData["productsuccess"] = "Product Updated Successfully";
+                return RedirectToAction("Index", "Product");
+            }
+
+            string uniqueFileName = "";
+            if (request.ImagePath != null)
+            {
+                if(existingProduct.ProductImageURL != null)
+                {
+                    string filepath = Path.Combine(webHostEnvironment.WebRootPath, "ProductImage",existingProduct.ProductImageURL);
+                    if(System.IO.File.Exists(filepath))
+                    {
+                        using (var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+
+                        }
+                        System.IO.File.Delete(filepath);   
+                    }
+                }
+                string uploadFoler = Path.Combine(webHostEnvironment.WebRootPath, "ProductImage");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + request.ImagePath.FileName;
+                string filePath = Path.Combine(uploadFoler, uniqueFileName);
+                request.ImagePath.CopyTo(new FileStream(filePath, FileMode.Create));
+            }
+
+            existingProduct.ProductImageURL = uniqueFileName;
+
             await context.SaveChangesAsync();
             TempData["productsuccess"] = "Product Updated Successfully";
 
             return RedirectToAction("Index", "Product");
         }
-
 
         [HttpGet("/Active/{id}")]
         public async Task<IActionResult> Active(Guid id)

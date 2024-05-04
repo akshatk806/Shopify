@@ -28,6 +28,11 @@ namespace Product_Management.Models.DTO
         public bool IsActive { get; set; } = true;
 
         public bool IsTrending { get; set; } = false;
+
+        [ValidateNever]
+        public string ProductImageURL { get; set; }
+        [ValidateNever]
+        public IFormFile ImagePath { get; set; }
         
         [ValidateNever]
         public Category Category { get; set; }
