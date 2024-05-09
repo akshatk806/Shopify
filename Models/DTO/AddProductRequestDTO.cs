@@ -1,3 +1,4 @@
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Product_Management.Models.DomainModels;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,14 +8,14 @@ namespace Product_Management.Models.DTO
 {
     public class AddProductRequestDTO
     {
-        [Required]
+        [Required(ErrorMessage = "*Product Name is Required")]
         public string ProductName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Product Description is Required")]
         [DataType(DataType.MultilineText)]
         public string ProductDesc { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Product Price is Required")]
         public int ProductPrice { get; set; }
 
         public DateTime ProductCreatedAt { get; set; } = DateTime.Now;
@@ -24,12 +25,16 @@ namespace Product_Management.Models.DTO
 
         public bool IsTrending { get; set; } = false;
 
-        public string ProductImageURL { get; set; }
-        public IFormFile ImagePath { get; set; }
         public int CategoryId { get; set; }
+        [ValidateNever]
+        public string ProductImageURL { get; set; }
+        [Required(ErrorMessage = "*Product Image is Required")]
+        public IFormFile ImagePath { get; set; }
 
         // navigation property
         [ForeignKey("CategoryId")]
+        [ValidateNever]
         public Category Category { get; set; }
+
     }
 }
